@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import numpy as np
+import sensor_msgs.point_cloud2 as pc2
+import rospy
+import cv_bridge
+from sensor_msgs.msg import Image
+from sensor_msgs.msg import PointCloud2
+
+# Añadir la ruta al paquete semantic_segmentation
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+def on_image(msg):
+    on_image.last_image = msg
+on_image.last_image = None
+
+class RoadSegmentationNode:
+    def __init__(self):
+        # Inicializa el nodo
+        rospy.init_node('road_segmentation_node')
+
+        # Obtener parámetros
+        MODEL = rospy.get_param('~model', 'mnv2_bdd100k_driveable_513')
+        TOPIC_IMAGE = rospy.get_param('~topic_image', 'image_raw')
+        TOPIC_SEMANTIC = rospy.get_param('~topic_semantic', 'semantic')
+        TOPIC_SEMANTIC_COLOR = rospy.get_param('~topic_semantic_color', 'semantic_color')
+        TOPIC_LIDAR = rospy.get_param('~topic_lidar', '/lidar/points')
+        RATE = rospy.get_param('~rate', 30.0)
+
+        # Suscripciones
+        sub_image = rospy.Subscriber(TOPIC_IMAGE, Image, on_image)
+        sub_lidar = rospy.Subscriber(TOPIC_LIDAR, PointCloud2, self.point_cloud_callback)  # Nueva suscripción para LiDAR
+        pub_semantic = rospy.Publisher(TOPIC_SEMANTIC, Image, queue_size=1)
+        pub_semantic_color = rospy.Publisher(TOPIC_SEMANTIC_COLOR, Image, queue_size=1)
+
+        rate = rospy.Rate(RATE)
+
+        # Cargar el modelo
+        self.model = getattr(__import__('semantic_segmentation.nodes.models', globals(), locals(), fromlist=[MODEL]), MODEL).Model()
+        rospy.set_param("semantic_categories", self.model.categories)
+
+        while not rospy.is_shutdown():
+            rate.sleep()
+
+            if on_image.last_image is None:
+                continue
+
+            # Procesar la imagen
+            header = on_image.last_image.header
+            semantic = self.model.infer([cv_bridge.imgmsg_to_cv2(on_image.last_image)])[0]
+
+            if pub_semantic.get_num_connections() > 0:
+                m = cv_bridge.cv2_to_imgmsg(semantic.astype(np.uint8), encoding='mono8')
+                m.header.stamp.secs = header.stamp.secs
+                m.header.stamp.nsecs = header.stamp.nsecs
+                pub_semantic.publish(m)
+
+            if pub_semantic_color.get_num_connections() > 0:
+                m = cv_bridge.cv2_to_imgmsg(self.model.color_map[semantic.astype(np.uint8)], encoding='rgb8')
+                m.header.stamp.secs = header.stamp.secs
+                m.header.stamp.nsecs = header.stamp.nsecs
+                pub_semantic_color.publish(m)
+
+    def point_cloud_callback(self, msg):
+        # Procesa la nube de puntos aquí
+        pc_data = pc2.read_points(msg, field_names=("x", "y", "z"), skip_nans=True)
+        # Aquí puedes convertir pc_data a un formato que tu modelo pueda usar
+        # (esto depende de cómo planees utilizar los datos de LiDAR)
+
+        # Para ejemplo, aquí podrías hacer algo como:
+        # points = np.array(list(pc_data))  # Conviertes a un numpy array
+        # Realiza el procesamiento que necesites aquí
+
+if __name__ == "__main__":
+    RoadSegmentationNode()
+

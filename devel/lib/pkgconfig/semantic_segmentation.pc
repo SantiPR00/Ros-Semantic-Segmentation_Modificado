@@ -1,0 +1,8 @@
+prefix=/home/santi/catkin_ws/devel
+
+Name: semantic_segmentation
+Description: Description of semantic_segmentation
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

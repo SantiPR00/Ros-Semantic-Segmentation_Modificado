@@ -1,0 +1,2 @@
+ros-semantic-segmentation/semantic_segmentation
+-DCATKIN_DEVEL_PREFIX=/home/santi/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/santi/catkin_ws/install -G Unix Makefiles
