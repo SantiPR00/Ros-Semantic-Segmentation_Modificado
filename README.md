@@ -51,15 +51,16 @@ rosrun semantic_segmentation nodes/segmentation_node.py _model:=mnv2_coco2017_dr
 ## Folder structure
 
 ```
-semantic_segmentation/
-├── models/
-│   ├── driveable100k/
-│   └── mnv2_coco/
-├── nodes/
-│   ├── segmentation_node.py
-│   └── segmentation_node_coco.py
-├── launch/
-├── scripts/
+catkin_ws/
+├── src/
+│   ├── ros-semantic-segmentation/
+│       └── semantic-segmentation/
+│           ├── nodes/
+│           |    └── segmentation_node.py
+|                └── test_publisher.py
+|                └── models/
+|                      └──mnv2_coco2017_driving_513
+|                
 ```
 
 ## Notes
