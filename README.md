@@ -4,34 +4,29 @@
 This repository is based on the original project [`ros-semantic-segmentation`](https://github.com/dheera/ros-semantic-segmentation), developed by Dheera Venkatraman. 
 The main goal of this modified version is to **adapt and improve the functionality of the original project**, solving compatibility issues and adding new capabilities to ease usage and visualization.
 
----
+## Overview of Modifications
 
-## Improvements and modifications made
+- Updated dependencies for compatibility with Python 3, TensorFlow, and ROS Noetic 
+- Fixed runtime errors related to model loading and message publishing 
+- Created a new segmentation node to support additional pretrained models (e.g. `mnv2_coco`) 
+- Refactored code structure for improved readability and debugging 
+- Modified category files to improve class recognition accuracy (e.g. traffic lights, people, vehicles) 
+- Enabled RViz-based semantic visualization through ROS topics `/semantic` and `/semantic_color`
 
-- **Updated dependencies** for compatibility with current versions of Python, TensorFlow, and ROS (Noetic).
-- **Fixed execution errors** that prevented the main node from running.
-- **Refactored code** and scripts for better debugging and organization.
-- **Created a new segmentation node** adapted to models with different categories (`mnv2_coco`).
-- **Fully working RViz visualization**, without requiring physical hardware.
-- **Category file modifications** to improve semantic precision (e.g., recognizing traffic lights, people, cars, etc.).
-- **Separated model versions**, allowing the use of different folders and configurations.
+## How to use
 
----
-
-## How to run
-
-1. **Clone the repository:**
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/SantiPR00/Ros-Semantic-Segmentation_Modificado.git
 cd Ros-Semantic-Segmentation_Modificado
 ```
 
-2. **Install required dependencies:**
+2. Install required dependencies:
 
 Make sure you have ROS installed (Noetic recommended), along with TensorFlow and OpenCV.
 
-3. **Build the workspace:**
+3. Build the workspace:
 
 ```bash
 cd ~/catkin_ws
@@ -39,15 +34,13 @@ catkin_make
 source devel/setup.bash
 ```
 
-4. **Launch the segmentation:**
+4. Launch the segmentation:
 
 ```bash
 rosrun semantic_segmentation nodes/segmentation_node.py _model:=mnv2_coco2017_driving_513
 ```
 
-5. **Visualize in RViz** using the `/semantic` and `/semantic_color` topics.
-
----
+5. Visualize in RViz using the `/semantic` and `/semantic_color` topics.
 
 ## Dataset and models used
 
@@ -55,9 +48,7 @@ rosrun semantic_segmentation nodes/segmentation_node.py _model:=mnv2_coco2017_dr
 - Test image included in the root folder (`imagen_prueba.png`)
 - Real-time semantic output via ROS topics
 
----
-
-## Relevant repository structure
+## Folder structure
 
 ```
 semantic_segmentation/
@@ -71,19 +62,11 @@ semantic_segmentation/
 ├── scripts/
 ```
 
----
+## Notes
 
-## Reference to the original repository
+This version has been used in a practical evaluation of multiple semantic segmentation approaches using ROS, and demonstrates a functional and extendable integration for both RGB-based and multi-class segmentation systems.
 
-This work is based on the repository:
-
-- [https://github.com/dheera/ros-semantic-segmentation](https://github.com/dheera/ros-semantic-segmentation)
-
-Original author: Dheera Venkatraman
-
----
-
-## Author of this version
+## Author
 
 This repository has been modified as part of a Bachelor's Thesis project focused on the exploration, adaptation, and analysis of semantic segmentation tools integrated into ROS.
 
